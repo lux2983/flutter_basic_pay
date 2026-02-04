@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_basic_pay/widgets/common/navigation_service.dart';
 import 'package:flutter_basic_pay/widgets/dashboard/transfers/transfer_utils.dart';
 import 'package:stellar_wallet_flutter_sdk/stellar_wallet_flutter_sdk.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class Sep24TransferHistoryWidget extends StatefulWidget {
   final List<Sep24Transaction> transactions;
@@ -340,17 +338,11 @@ class _Sep24TransferHistoryWidgetState
         width: double.infinity,
         child: ElevatedButton.icon(
           onPressed: () {
-            var controller = WebViewController()
-              ..setJavaScriptMode(JavaScriptMode.unrestricted)
-              ..loadRequest(Uri.parse(item.moreInfoUrl));
-            showModalBottomSheet(
-                context: NavigationService.navigatorKey.currentContext!,
-                isScrollControlled: true,
-                useSafeArea: true,
-                builder: (context) {
-                  return WebViewContainer(
-                      title: "SEP-24 More info", controller: controller);
-                });
+            launchInteractiveUrl(
+              context: context,
+              url: item.moreInfoUrl,
+              title: 'SEP-24 More Info',
+            );
           },
           icon: const Icon(Icons.open_in_new, size: 16),
           label: const Text(

@@ -10,7 +10,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_basic_pay/widgets/common/navigation_service.dart';
 import 'package:stellar_wallet_flutter_sdk/stellar_wallet_flutter_sdk.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+/// Launches an interactive URL for SEP-6/SEP-24 transfers.
+/// On web: opens URL in a new browser tab.
+/// On mobile: shows WebView in a modal bottom sheet.
+Future<void> launchInteractiveUrl({
+  required BuildContext context,
+  required String url,
+  required String title,
+}) async {
+  if (kIsWeb) {
+    // On web, open in a new browser tab
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open URL: $url'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  } else {
+    // On mobile, use WebView
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(url));
+
+    showModalBottomSheet(
+      context: NavigationService.navigatorKey.currentContext!,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) {
+        return WebViewContainer(title: title, controller: controller);
+      },
+    );
+  }
+}
 
 class TransferDetailsForm extends StatefulWidget {
   static const transferAmountKey = 'transfer_amount';

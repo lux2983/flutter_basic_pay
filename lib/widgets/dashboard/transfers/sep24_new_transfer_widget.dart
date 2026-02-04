@@ -5,11 +5,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_basic_pay/services/stellar.dart';
-import 'package:flutter_basic_pay/widgets/common/navigation_service.dart';
 import 'package:flutter_basic_pay/widgets/dashboard/transfers/transfer_utils.dart';
 import 'package:stellar_wallet_flutter_sdk/stellar_wallet_flutter_sdk.dart';
 import 'package:flutter_basic_pay/widgets/common/loading.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class Sep24NewTransferWidget extends StatefulWidget {
   final AnchoredAssetInfo anchoredAsset;
@@ -34,7 +32,6 @@ class _Sep24NewTransferWidgetState extends State<Sep24NewTransferWidget> {
   AnchorServiceAsset? _depositInfo;
   AnchorServiceAsset? _withdrawalInfo;
   String? _errorText;
-  final _controller = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
   @override
   Widget build(BuildContext context) {
     var anchoredAsset = widget.anchoredAsset;
@@ -266,27 +263,26 @@ class _Sep24NewTransferWidgetState extends State<Sep24NewTransferWidget> {
 
     var anchoredAsset = widget.anchoredAsset;
     var authToken = widget.authToken;
+    String? url;
     try {
       var sep24 = anchoredAsset.anchor.sep24();
       var interactiveResponse = await sep24.deposit(anchoredAsset.asset, authToken);
-      var url = interactiveResponse.url;
-      _controller.loadRequest(Uri.parse(url));
+      url = interactiveResponse.url;
     } catch (e) {
       _errorText = 'An error occurred: ${e.toString()}.';
     }
 
-    showModalBottomSheet(
-        context: NavigationService.navigatorKey.currentContext!,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (context) {
-          return WebViewContainer(
-              title: "SEP-24 Deposit", controller: _controller);
-        });
-
     setState(() {
       _state = Sep24WidgetState.initial;
     });
+
+    if (url != null && mounted) {
+      await launchInteractiveUrl(
+        context: context,
+        url: url,
+        title: 'SEP-24 Deposit',
+      );
+    }
   }
 
   Future<void> withdraw() async {
@@ -296,29 +292,28 @@ class _Sep24NewTransferWidgetState extends State<Sep24NewTransferWidget> {
 
     var anchoredAsset = widget.anchoredAsset;
     var authToken = widget.authToken;
+    String? url;
 
     try {
       var sep24 = anchoredAsset.anchor.sep24();
       var interactiveResponse =
           await sep24.withdraw(anchoredAsset.asset, authToken);
-      var url = interactiveResponse.url;
-      _controller.loadRequest(Uri.parse(url));
+      url = interactiveResponse.url;
     } catch (e) {
       _errorText = 'An error occurred: ${e.toString()}.';
     }
 
-    showModalBottomSheet(
-        context: NavigationService.navigatorKey.currentContext!,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (context) {
-          return WebViewContainer(
-              title: "SEP-24 Withdrawal", controller: _controller);
-        });
-
     setState(() {
       _state = Sep24WidgetState.initial;
     });
+
+    if (url != null && mounted) {
+      await launchInteractiveUrl(
+        context: context,
+        url: url,
+        title: 'SEP-24 Withdrawal',
+      );
+    }
   }
 
   AnchorServiceAsset? getDepositInfoIfEnabled(AnchorServiceInfo sep24Info, String assetCode) {

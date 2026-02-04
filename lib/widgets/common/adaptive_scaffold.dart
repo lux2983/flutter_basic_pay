@@ -260,13 +260,15 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   Widget _buildDrawerTile(AdaptiveScaffoldDestination destination) {
     final isSelected = widget.destinations.indexOf(destination) == widget.currentIndex;
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.1) : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ListTile(
         leading: Icon(
           destination.icon,
           color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF64748B),
@@ -285,6 +287,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           borderRadius: BorderRadius.circular(12),
         ),
         onTap: () => _destinationTapped(destination),
+        ),
       ),
     );
   }
