@@ -415,6 +415,15 @@ class _TransfersPageBodyState extends State<TransfersPageBody> {
                     getSep10AuthPinForm(dashboardState),
                   if (newTransfer &&
                       _state == TransfersPageState.transferInfoLoaded &&
+                      _sep24Info != null &&
+                      _sep10AuthToken != null)
+                    Sep24NewTransferWidget(
+                        anchoredAsset: getSelectedAnchorAsset(),
+                        sep24Info: _sep24Info!,
+                        authToken: _sep10AuthToken!,
+                        key: ObjectKey([_sep24Info, _sep10AuthToken])),
+                  if (newTransfer &&
+                      _state == TransfersPageState.transferInfoLoaded &&
                       _sep6Info != null &&
                       _sep10AuthToken != null)
                     Sep6NewTransferWidget(
@@ -423,25 +432,16 @@ class _TransfersPageBodyState extends State<TransfersPageBody> {
                       authToken: _sep10AuthToken!,
                       key: ObjectKey([_sep6Info, _sep10AuthToken]),
                     ),
-                  if (newTransfer &&
-                      _state == TransfersPageState.transferInfoLoaded &&
-                      _sep24Info != null &&
-                      _sep10AuthToken != null)
-                    Sep24NewTransferWidget(
-                        anchoredAsset: getSelectedAnchorAsset(),
-                        sep24Info: _sep24Info!,
-                        authToken: _sep10AuthToken!,
-                        key: ObjectKey([_sep24Info, _sep10AuthToken])),
-                  if (showHistory &&
-                      _state == TransfersPageState.transferInfoLoaded &&
-                      _sep6HistoryTransactions != null &&
-                      _sep6HistoryTransactions!.isNotEmpty)
-                    getSep6HistoryColumn(_sep6HistoryTransactions!),
                   if (showHistory &&
                       _state == TransfersPageState.transferInfoLoaded &&
                       _sep24HistoryTransactions != null &&
                       _sep24HistoryTransactions!.isNotEmpty)
                     getSep24HistoryColumn(_sep24HistoryTransactions!),
+                  if (showHistory &&
+                      _state == TransfersPageState.transferInfoLoaded &&
+                      _sep6HistoryTransactions != null &&
+                      _sep6HistoryTransactions!.isNotEmpty)
+                    getSep6HistoryColumn(_sep6HistoryTransactions!),
                   ],
                 )
         ],
